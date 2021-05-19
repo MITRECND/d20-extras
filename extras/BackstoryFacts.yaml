@@ -1,0 +1,11 @@
+facts:
+    - name: BulkAnalyzeFact
+      arguments:
+          directory: /path/to/files
+          recursive: False
+          enable: True
+    - name: VTDownloadFact
+      arguments:
+          vt_api_key: your_api_key
+          filehash: hash_to_lookup_and_download_for_analysis
+          enable: False

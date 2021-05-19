@@ -1,0 +1,3 @@
+[submodule "malchive"]
+	path = malchive
+	url = git@github.com:/mitrecnd/malchive

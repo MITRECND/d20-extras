@@ -1,0 +1,19 @@
+# Requires exiftool on your machine and in your PATH
+git+https://github.com/smarnach/pyexiftool.git
+rarfile
+# Requires YARA on your machine and in your PATH
+# Install this manually since pip installing basically never works
+# yara-python
+# If installing on OSX you'll have to brew install libarchive and
+# set your LA_LIBRARY_FILEPATH per https://github.com/dsoprea/PyEasyArchive/
+# Also requires 7zip installed 
+# Also requires UPX installed
+# Requires malchive
+git+https://github.com/MITRECND/malchive.git
+lief
+libarchive
+oletools
+uncompyle6
+xdis
+PyInstaller
+pdfrw

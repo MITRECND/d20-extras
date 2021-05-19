@@ -1,0 +1,11 @@
+{
+  'facts': [
+    {
+      'name': 'BulkAnalyzt',
+      'arguments': {
+        'directory': '/path/to/files',
+        'enable': True
+      },
+    },
+  ]
+}

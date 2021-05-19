@@ -1,0 +1,28 @@
+Python Libraries:
+    - PyExifTool
+        - git clone https://github.com/smarnach/pyexiftool.git
+        - Requires exiftool on your machine and in your PATH
+    - yara-python
+        - Requires YARA on your machine
+    - rarfile
+    - LIEF
+    - libarchive
+        - This is used to interface with 7zip which should be installed
+        - See https://github.com/dsoprea/PyEasyArchive/ for more install instructions
+          - If you are on OSX, pay close attention to setting your LA_LIBRARY_FILEPATH
+    - malchive
+    - oletools
+    - telfhash
+        - https://github.com/trendmicro/telfhash
+        - Requires TLSH:
+            - https://github.com/trendmicro/tlsh/
+                - for MacOS:
+                    - ./make.sh
+                    - cd build/release
+                    - make
+                    - make install
+                - Remember to install Python library:
+                    - after ./make.sh
+                    - cd py_ext
+                    - python setup.py build
+                    - python setup.py install
