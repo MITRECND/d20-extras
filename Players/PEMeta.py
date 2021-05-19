@@ -616,88 +616,83 @@ class PEMetaPlayer(PlayerTemplate):
             self.console.addFact(df)
 
     def get_signature(self):
-        signature = self.pe.signature
-        sd = {
-            "digest_algorithm":
-            self.format_str.format(oid_to_string(signature.digest_algorithm)),
-            "version":
-            self.format_dec.format(signature.version),
-        }
-        content_info = signature.content_info
-        cid = {
-            "content_type":
-            self.format_str.format(oid_to_string(content_info.content_type)),
-            "digest_algorithm":
-            self.format_str.format(oid_to_string(
-                content_info.digest_algorithm)),
-            "type":
-            self.format_str.format(oid_to_string(content_info.type)),
-        }
-        sd['content_information'] = cid
-
-        cl = []
-        for crt in signature.certificates:
-            sn_str = ":".join(
-                map(lambda e: "{:02x}".format(e), crt.serial_number))
-            valid_from_str = "-".join(map(
-                str, crt.valid_from[:3])) + " " + ":".join(
-                    map(str, crt.valid_from[3:]))
-            valid_to_str = "-".join(map(str,
-                                        crt.valid_to[:3])) + " " + ":".join(
-                                            map(str, crt.valid_to[3:]))
-            cd = {
-                "issuer":
-                self.format_str.format(crt.issuer),
-                "serial_number":
-                self.format_str.format(sn_str),
-                "signature_algorithm":
-                self.format_str.format(oid_to_string(crt.signature_algorithm)),
-                "subject":
-                self.format_str.format(crt.subject),
-                "valid_from":
-                self.format_str.format(valid_from_str),
-                "valid_to":
-                self.format_str.format(valid_to_str),
-                "version":
-                self.format_dec.format(crt.version),
-            }
-            cl.append(cd)
-
-        sd['certificates'] = cl
-
-        signer_info = signature.signer_info
-
         try:
-            issuer_str = " ".join(map(
-                                      lambda e: oid_to_string(e[0]) + " = " +
-                                      e[1], signer_info.issuer[0]))
-        except IndexError as e:
-            self.console.print(e)
-            issuer_str = ""
+            signatures = self.pe.signatures
+        except Exception:
+            return
+        for signature in signatures:
+            sd = {
+                "digest_algorithm": self.format_str.format(
+                    oid_to_string(signature.digest_algorithm)),
+                "version":
+                self.format_dec.format(signature.version),
+            }
+            content_info = signature.content_info
+            cid = {
+                "content_type": self.format_str.format(
+                    oid_to_string(content_info.content_type)),
+                "digest_algorithm":
+                self.format_str.format(oid_to_string(
+                    content_info.digest_algorithm)),
+                "type":
+                self.format_str.format(oid_to_string(content_info.type)),
+            }
+            sd['content_information'] = cid
 
-        sid = {
-            "digest_algorithm":
-            self.format_str.format(oid_to_string(
-                signer_info.digest_algorithm)),
-            "issuer":
-            self.format_str.format(issuer_str),
-            "program_name":
-            self.format_str.format(
-                signer_info.authenticated_attributes.program_name),
-            "signature_algorithm":
-            self.format_str.format(
-                oid_to_string(signer_info.signature_algorithm)),
-            "url":
-            self.format_str.format(
-                signer_info.authenticated_attributes.more_info),
-            "version":
-            self.format_dec.format(signer_info.version),
-        }
-        sd['signer_information'] = sid
-        sf = PESignatureFact(parentObjects=[self.object_id],
-                             parentFacts=[self.fact_id],
-                             **sd)
-        self.console.addFact(sf)
+            cl = []
+            for crt in signature.certificates:
+                sn_str = ":".join(
+                    map(lambda e: "{:02x}".format(e), crt.serial_number))
+                valid_from_str = "-".join(map(
+                    str, crt.valid_from[:3])) + " " + ":".join(
+                        map(str, crt.valid_from[3:]))
+                valid_to_str = "-".join(map(str, crt.valid_to[:3])) + " " + ":".join(map(str, crt.valid_to[3:]))  # noqa: E501
+                cd = {
+                    "issuer": self.format_str.format(crt.issuer),
+                    "serial_number": self.format_str.format(sn_str),
+                    "signature_algorithm": self.format_str.format(
+                        oid_to_string(crt.signature_algorithm)),
+                    "subject": self.format_str.format(crt.subject),
+                    "valid_from": self.format_str.format(valid_from_str),
+                    "valid_to": self.format_str.format(valid_to_str),
+                    "version": self.format_dec.format(crt.version),
+                }
+                cl.append(cd)
+
+            sd['certificates'] = cl
+
+            signer_info = signature.signer_info
+
+            try:
+                issuer_str = " ".join(
+                    map(lambda e: oid_to_string(e[0]) + " = " + e[1], signer_info.issuer[0]))  # noqa: E501
+            except IndexError as e:
+                self.console.print(e)
+                issuer_str = ""
+
+            sid = {
+                "digest_algorithm":
+                self.format_str.format(oid_to_string(
+                    signer_info.digest_algorithm)),
+                "issuer":
+                self.format_str.format(issuer_str),
+                "program_name":
+                self.format_str.format(
+                    signer_info.authenticated_attributes.program_name),
+                "signature_algorithm":
+                self.format_str.format(
+                    oid_to_string(signer_info.signature_algorithm)),
+                "url":
+                self.format_str.format(
+                    signer_info.authenticated_attributes.more_info),
+                "version":
+                self.format_dec.format(signer_info.version),
+            }
+            sd['signer_information'] = sid
+            sf = PESignatureFact(parentObjects=[self.object_id],
+                                 parentFacts=[self.fact_id],
+                                 **sd)
+            self.console.addFact(sf)
 
     def get_rich_header(self):
         rhd = {"key": self.format_hex.format(self.pe.rich_header.key)}
