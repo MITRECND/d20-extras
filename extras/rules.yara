@@ -194,3 +194,52 @@ rule object_linking_embedding_compound_file
     condition:
         $olecf at 0
 }
+
+private rule pivy_byte_scramble
+{
+    strings:
+        $code = { 92 33 c9 69 c0 05 4b 56 ac 83 c0 01 89 84 8e d9 08 00 00 83 c1 01 83 f9 22 72 e8 }
+
+    condition:
+        $code
+}
+
+private rule pivy_config_ids
+{
+    strings:
+        $password = { 45 01 }
+        $persist_active_setup_guid = { 65 01 }
+        $callback_info_0 = { 90 01 }
+        $proxy_config = { c1 02 }
+        $callback_info_1 = { c5 02 }
+        $persist_active_setup = { f6 03 }
+        $melt = { f8 03 }
+        $inject_persist = { f9 03 }
+        $keylogger = { fa 03 }
+        $mutex = { fb 03 }
+        $active_setup = { 0f 04 } // typically the first config entry 
+        $browser_key = { 18 04 }
+        $inject_into_browser = { 41 04 }
+        $inject_proc_name = { 42 04 }
+        $persist_active_setup_key = { 56 04 }
+        $use_proxy = { f4 0a }
+        $proxy_persist = { f5 0a }
+        $server_id = { fa 0a }
+        $server_group = { f9 0b }
+        $inject = { 08 0d }
+        $autorun_persist = { 09 0d }
+        $persist_hklm_run_name = { 12 0e }
+
+    condition:
+        // at the start of the config, ensure at least eight 
+        // config enum values are present within the start
+        // and 336 bytes thereafter
+        for any i in (1..#active_setup) :
+            (for 8 of them : ($ in (@active_setup[i]..(@active_setup[i] + 0x150))))
+}
+
+rule poison_ivy
+{
+    condition:
+        (pivy_config_ids and pivy_byte_scramble)
+}
